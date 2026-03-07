@@ -25,4 +25,39 @@ const createArticle = (req, res) =>{
     })
 }
 
-module.exports = { createArticle }
+const updateArticle = (req,res)=>{
+    if(req.method === 'GET'){
+        models.Article.findByPk(req.params.id)
+        .then(article =>{
+
+            modles.Author.findAll()
+            .then(authors =>{
+                return res.status(200).json({ article, authors })
+            })
+        }) .catch(error =>{
+            return res.status(500).send(error.message)
+        })
+    }
+
+    if (req.method === 'POST') {
+
+        models.Article.update({
+            name: req.body.name,
+            slug: req.body.slug,
+            image: req.body.image,
+            body: req.body.body,
+            published: req.body.published,
+            author_id: req.body.author_id
+        },{
+            where: { id: req.params.id }
+        })
+        .then(()=>{
+            return res.status(200).json({msg: 'Article updated '})
+        })
+        .catch (error =>{
+            return res.status(500).send(error.message)
+        })
+    }
+}
+
+module.exports = { createArticle, updateArticle }
